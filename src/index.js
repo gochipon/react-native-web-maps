@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { withGoogleMap, GoogleMap } from 'react-google-maps';
-import Marker from './Marker';
-import Polyline from './Polyline';
-import Callout from './Callout';
+import React, { Component } from "react";
+import { View, StyleSheet } from "react-native";
+import { withGoogleMap, GoogleMap } from "react-google-maps";
+import Marker from "./Marker";
+import Polyline from "./Polyline";
+import Callout from "./Callout";
 
 const GoogleMapContainer = withGoogleMap(props => (
   <GoogleMap {...props} ref={props.handleMapMounted} />
@@ -11,7 +11,7 @@ const GoogleMapContainer = withGoogleMap(props => (
 
 class MapView extends Component {
   state = {
-    center: null,
+    center: null
   };
 
   handleMapMounted = map => {
@@ -23,7 +23,7 @@ class MapView extends Component {
     return {
       zoom: this.map.getZoom(),
       center: this.map.getCenter(),
-      heading: this.map.getHeading(),
+      heading: this.map.getHeading()
     };
   };
 
@@ -34,7 +34,7 @@ class MapView extends Component {
 
   animateToRegion(coordinates) {
     this.setState({
-      center: { lat: coordinates.latitude, lng: coordinates.longitude },
+      center: { lat: coordinates.latitude, lng: coordinates.longitude }
     });
   }
 
@@ -42,15 +42,27 @@ class MapView extends Component {
     const { onRegionChangeComplete } = this.props;
     if (this.map && onRegionChangeComplete) {
       const center = this.map.getCenter();
+      const bounds = this.map.getBounds();
       onRegionChangeComplete({
         latitude: center.lat(),
         longitude: center.lng(),
+        latitudeDelta:
+          bounds.getNorthEast().lat() - bounds.getSouthWest().lat(),
+        longitudeDelta:
+          bounds.getNorthEast().lng() - bounds.getSouthWest().lng()
       });
     }
   };
 
   render() {
-    const { region, initialRegion, onRegionChange, onPress, options, defaultZoom } = this.props;
+    const {
+      region,
+      initialRegion,
+      d,
+      onPress,
+      defaultZoom,
+      ...otherProps
+    } = this.props;
     const { center } = this.state;
     const style = this.props.style || styles.container;
 
@@ -60,14 +72,14 @@ class MapView extends Component {
       ? {
           center: {
             lat: region.latitude,
-            lng: region.longitude,
-          },
+            lng: region.longitude
+          }
         }
       : {
           defaultCenter: {
             lat: initialRegion.latitude,
-            lng: initialRegion.longitude,
-          },
+            lng: initialRegion.longitude
+          }
         };
     const zoom =
       defaultZoom ||
@@ -76,22 +88,25 @@ class MapView extends Component {
         : initialRegion && initialRegion.latitudeDelta
         ? Math.round(Math.log(360 / initialRegion.latitudeDelta) / Math.LN2)
         : 15);
-    googleMapProps['zoom'] = this.state.zoom ? this.state.zoom : zoom;
+    googleMapProps["zoom"] = this.state.zoom ? this.state.zoom : zoom;
     return (
       <View style={style}>
         <GoogleMapContainer
+          {...otherProps}
+          {...centerProps}
           handleMapMounted={this.handleMapMounted}
-          containerElement={<div style={{ height: '100%' }} />}
-          mapElement={<div style={{ height: '100%' }} />}
+          containerElement={<div style={{ height: "100%" }} />}
+          mapElement={<div style={{ height: "100%" }} />}
           onZoomChanged={() => {
             this.setState({ zoom: this.map.getZoom() });
           }}
           {...googleMapProps}
-          onDragStart={onRegionChange}
+          onDragStart={d}
           onIdle={this.onDragEnd}
           defaultZoom={zoom}
           onClick={onPress}
-          options={options}>
+          options={options}
+        >
           {this.props.children}
         </GoogleMapContainer>
       </View>
@@ -105,8 +120,8 @@ MapView.Callout = Callout;
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-  },
+    height: "100%"
+  }
 });
 
 export default MapView;
