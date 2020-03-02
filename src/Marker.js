@@ -1,3 +1,4 @@
+// @ts-check
 import React, { Component } from "react";
 import { Marker, OverlayView } from "react-google-maps";
 
@@ -12,7 +13,14 @@ class MapViewMarker extends Component {
     this.setState({ isOpen: false });
   }
   render() {
-    const { description, title, coordinate, children, ...rest } = this.props;
+    const {
+      description,
+      title,
+      coordinate,
+      children,
+      onPress,
+      ...rest
+    } = this.props;
     if (children) {
       const wrappedChildren = onPress ? (
         <div

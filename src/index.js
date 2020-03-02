@@ -1,3 +1,4 @@
+// @ts-check
 import React, { Component } from "react";
 import { View, StyleSheet } from "react-native";
 import { withGoogleMap, GoogleMap } from "react-google-maps";
@@ -93,19 +94,17 @@ class MapView extends Component {
       <View style={style}>
         <GoogleMapContainer
           {...otherProps}
-          {...centerProps}
           handleMapMounted={this.handleMapMounted}
           containerElement={<div style={{ height: "100%" }} />}
           mapElement={<div style={{ height: "100%" }} />}
           onZoomChanged={() => {
             this.setState({ zoom: this.map.getZoom() });
           }}
-          {...googleMapProps}
           onDragStart={d}
           onIdle={this.onDragEnd}
           defaultZoom={zoom}
           onClick={onPress}
-          options={options}
+          {...googleMapProps}
         >
           {this.props.children}
         </GoogleMapContainer>
